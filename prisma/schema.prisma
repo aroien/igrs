@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String
+  password    String
+  role        String
+  createdAt   DateTime @default(now())
+
+  enrollments          Enrollment[]
+  courses              Course[]
+  activityLogs         ActivityLog[]
+  announcementsCreated Announcement[]
+  announcementReads    UserAnnouncementRead[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  category    String
+  level       String
+  duration    String
+  price       Float    @default(0)
+  status      String   @default("DRAFT")
+  teacherId   String
+  createdAt   DateTime @default(now())
+
+  teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  @@index([teacherId])
+  @@index([category])
+  @@index([status])
+}
+
+model Lesson {
+  id       String @id @default(uuid())
+  title    String
+  content  String
+  duration String
+  order    Int
+  courseId String
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  studentId  String
+  courseId   String
+  progress   Int      @default(0)
+  enrolledAt DateTime @default(now())
+
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model TeacherInvite {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  token     String   @unique
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String
+  adminId   String
+  createdAt DateTime @default(now())
+
+  admin User @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  imageUrl  String?
+  status    String   @default("DRAFT")
+  target    String   @default("ALL")
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admin    User                  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  readings UserAnnouncementRead[]
+
+  @@index([createdBy])
+  @@index([status])
+  @@index([target])
+}
+
+model UserAnnouncementRead {
+  id              String   @id @default(uuid())
+  userId          String
+  announcementId  String
+  isRead          Boolean  @default(false)
+  readAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement Announcement  @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+  @@index([userId])
+  @@index([announcementId])
+}
