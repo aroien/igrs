@@ -15,8 +15,13 @@ interface OverviewTabProps {
 }
 
 export default function OverviewTab({ stats, users, courses, setActiveTab }: OverviewTabProps) {
+<<<<<<< HEAD
   const recentUsers = users.slice(-5).reverse()
   const recentCourses = courses.slice(-4).reverse()
+=======
+  const recentUsers = Array.isArray(users) ? users.slice(-5).reverse() : []
+  const recentCourses = Array.isArray(courses) ? courses.slice(-4).reverse() : []
+>>>>>>> 32f0cbd (auth updated)
 
   return (
     <div>

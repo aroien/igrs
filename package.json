@@ -9,6 +9,12 @@
     "lint": "eslint",
     "postinstall": "prisma generate"
   },
+<<<<<<< HEAD
+=======
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+>>>>>>> 32f0cbd (auth updated)
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@libsql/client": "^0.17.0",
@@ -58,6 +64,11 @@
     "eslint-config-next": "16.1.1",
     "prisma": "5.22.0",
     "tailwindcss": "^4",
+<<<<<<< HEAD
+=======
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+>>>>>>> 32f0cbd (auth updated)
     "typescript": "^5"
   }
 }
